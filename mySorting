@@ -2,6 +2,13 @@ import java.util.Random;
 
 public class Sorting {
 
+    // Constants for array sizes and random number boundaries
+    private static final int SMALL_ARRAY_SIZE = 2;
+    private static final int MEDIUM_ARRAY_SIZE = 4;
+    private static final int LARGE_ARRAY_SIZE = 8;
+    private static final int MIN_RANDOM_VALUE = 0;
+    private static final int MAX_RANDOM_VALUE = 100;
+
     /**
      * In-place insertion sort of an array
      * 
@@ -17,7 +24,7 @@ public class Sorting {
             }
             arr[j + 1] = current;
         }
-    } // method insertionSort
+    }
 
     /**
      * Orchestrates an in-place merge sort for an array
@@ -31,8 +38,15 @@ public class Sorting {
             int rightEdge = n - 1;
             sort(arr, leftEdge, rightEdge);
         }
-    } // method mergeSort
+    }
 
+    /**
+     * Recursive method to merge sort a subarray.
+     * 
+     * @param arr       int[] where the subarray is located
+     * @param leftEdge  int index to the beginning of the subarray (inclusive)
+     * @param rightEdge int index to the end of the subarray (not inclusive)
+     */
     static void sort(int[] arr, int leftEdge, int rightEdge) {
         if (leftEdge < rightEdge) {
             int middle = leftEdge + (rightEdge - leftEdge) / 2;
@@ -42,18 +56,30 @@ public class Sorting {
         }
     }
 
+    /**
+     * Merges two sorted subarrays into a sorted subarray
+     * 
+     * @param arr       int[] where the subarrays are located
+     * @param leftEdge  beginning of first subarray
+     * @param middle    end of first subarray and beginning of second
+     * @param rightEdge end of second subarry
+     */
     static void merge(int[] arr, int leftEdge, int middle, int rightEdge) {
         int sizeLeft = middle - leftEdge + 1;
         int sizeRight = rightEdge - middle;
+
         int[] tempLeft = new int[sizeLeft];
         int[] tempRight = new int[sizeRight];
+
         for (int i = 0; i < sizeLeft; i++) {
             tempLeft[i] = arr[leftEdge + i];
         }
         for (int j = 0; j < sizeRight; j++) {
             tempRight[j] = arr[middle + 1 + j];
         }
+
         int i = 0, j = 0, k = leftEdge;
+
         while (i < sizeLeft && j < sizeRight) {
             if (tempLeft[i] < tempRight[j]) {
                 arr[k++] = tempLeft[i++];
@@ -61,9 +87,11 @@ public class Sorting {
                 arr[k++] = tempRight[j++];
             }
         }
+
         while (i < sizeLeft) {
             arr[k++] = tempLeft[i++];
         }
+
         while (j < sizeRight) {
             arr[k++] = tempRight[j++];
         }
@@ -76,6 +104,7 @@ public class Sorting {
      * @param minValue smallest value in the array
      * @param maxValue largest value in the array
      * @return array of specified length with random numbers between min and max
+     *         values given.
      */
     static int[] randomArray(int size, int minValue, int maxValue) {
         Random rand = new Random();
@@ -86,41 +115,20 @@ public class Sorting {
         return randArr;
     }
 
-    /**
-     * Runs experiments to measure performance characteristics of insertionSort and mergeSort
-     * on arrays of various lengths and prints out the time taken for each sort.
-     */
-    public static void experiment() {
-        int[] sizes = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 }; // Array sizes to test
-        int minValue = 1;
-        int maxValue = 1000; // Range for random values in the array
-
-        System.out.println("Array Size\tInsertionSort Time (ns)\tMergeSort Time (ns)");
-
-        for (int size : sizes) {
-            // Generate a random array of the current size
-            int[] randomArray = randomArray(size, minValue, maxValue);
-
-            // Create copies of the array to ensure both sorts run on the same data
-            int[] arrayForInsertionSort = randomArray.clone();
-            int[] arrayForMergeSort = randomArray.clone();
-
-            // Measure insertionSort time
-            long startTime = System.nanoTime();
-            insertionSort(arrayForInsertionSort);
-            long insertionSortTime = System.nanoTime() - startTime;
-
-            // Measure mergeSort time
-            startTime = System.nanoTime();
-            mergeSort(arrayForMergeSort);
-            long mergeSortTime = System.nanoTime() - startTime;
-
-            // Print out results
-            System.out.printf("%d\t\t%d\t\t\t%d\n", size, insertionSortTime, mergeSortTime);
-        }
-    }
-
     public static void main(String[] args) {
-        experiment(); // Run the experiment
+        int[] randomArraySmall = randomArray(SMALL_ARRAY_SIZE, MIN_RANDOM_VALUE, MAX_RANDOM_VALUE);
+        int[] randomArrayMedium = randomArray(MEDIUM_ARRAY_SIZE, MIN_RANDOM_VALUE, MAX_RANDOM_VALUE);
+        int[] randomArrayLarge = randomArray(LARGE_ARRAY_SIZE, MIN_RANDOM_VALUE, MAX_RANDOM_VALUE);
+
+        // Test insertionSort
+        System.out.println("Testing insertionSort with small array:");
+        insertionSort(randomArraySmall);
+        System.out.println(java.util.Arrays.toString(randomArraySmall));
+
+        // Test mergeSort
+        System.out.println("Testing mergeSort with medium array:");
+        mergeSort(randomArrayMedium);
+        System.out.println(java.util.Arrays.toString(randomArrayMedium));
     }
+
 }
