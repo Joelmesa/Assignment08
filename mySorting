@@ -1,0 +1,126 @@
+import java.util.Random;
+
+public class Sorting {
+
+    /**
+     * In-place insertion sort of an array
+     * 
+     * @param arr int[] to sort in-place
+     */
+    static void insertionSort(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            int current = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > current) {
+                arr[j + 1] = arr[j];
+                j -= 1;
+            }
+            arr[j + 1] = current;
+        }
+    } // method insertionSort
+
+    /**
+     * Orchestrates an in-place merge sort for an array
+     * 
+     * @param arr int[] to sort in-place
+     */
+    static void mergeSort(int[] arr) {
+        int n = arr.length;
+        if (n > 1) {
+            int leftEdge = 0;
+            int rightEdge = n - 1;
+            sort(arr, leftEdge, rightEdge);
+        }
+    } // method mergeSort
+
+    static void sort(int[] arr, int leftEdge, int rightEdge) {
+        if (leftEdge < rightEdge) {
+            int middle = leftEdge + (rightEdge - leftEdge) / 2;
+            sort(arr, leftEdge, middle);
+            sort(arr, middle + 1, rightEdge);
+            merge(arr, leftEdge, middle, rightEdge);
+        }
+    }
+
+    static void merge(int[] arr, int leftEdge, int middle, int rightEdge) {
+        int sizeLeft = middle - leftEdge + 1;
+        int sizeRight = rightEdge - middle;
+        int[] tempLeft = new int[sizeLeft];
+        int[] tempRight = new int[sizeRight];
+        for (int i = 0; i < sizeLeft; i++) {
+            tempLeft[i] = arr[leftEdge + i];
+        }
+        for (int j = 0; j < sizeRight; j++) {
+            tempRight[j] = arr[middle + 1 + j];
+        }
+        int i = 0, j = 0, k = leftEdge;
+        while (i < sizeLeft && j < sizeRight) {
+            if (tempLeft[i] < tempRight[j]) {
+                arr[k++] = tempLeft[i++];
+            } else {
+                arr[k++] = tempRight[j++];
+            }
+        }
+        while (i < sizeLeft) {
+            arr[k++] = tempLeft[i++];
+        }
+        while (j < sizeRight) {
+            arr[k++] = tempRight[j++];
+        }
+    }
+
+    /**
+     * Creates an array and populates it with random values
+     * 
+     * @param size     size of array to create
+     * @param minValue smallest value in the array
+     * @param maxValue largest value in the array
+     * @return array of specified length with random numbers between min and max
+     */
+    static int[] randomArray(int size, int minValue, int maxValue) {
+        Random rand = new Random();
+        int[] randArr = new int[size];
+        for (int i = 0; i < randArr.length; i++) {
+            randArr[i] = minValue + rand.nextInt(1 + maxValue - minValue);
+        }
+        return randArr;
+    }
+
+    /**
+     * Runs experiments to measure performance characteristics of insertionSort and mergeSort
+     * on arrays of various lengths and prints out the time taken for each sort.
+     */
+    public static void experiment() {
+        int[] sizes = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 }; // Array sizes to test
+        int minValue = 1;
+        int maxValue = 1000; // Range for random values in the array
+
+        System.out.println("Array Size\tInsertionSort Time (ns)\tMergeSort Time (ns)");
+
+        for (int size : sizes) {
+            // Generate a random array of the current size
+            int[] randomArray = randomArray(size, minValue, maxValue);
+
+            // Create copies of the array to ensure both sorts run on the same data
+            int[] arrayForInsertionSort = randomArray.clone();
+            int[] arrayForMergeSort = randomArray.clone();
+
+            // Measure insertionSort time
+            long startTime = System.nanoTime();
+            insertionSort(arrayForInsertionSort);
+            long insertionSortTime = System.nanoTime() - startTime;
+
+            // Measure mergeSort time
+            startTime = System.nanoTime();
+            mergeSort(arrayForMergeSort);
+            long mergeSortTime = System.nanoTime() - startTime;
+
+            // Print out results
+            System.out.printf("%d\t\t%d\t\t\t%d\n", size, insertionSortTime, mergeSortTime);
+        }
+    }
+
+    public static void main(String[] args) {
+        experiment(); // Run the experiment
+    }
+}
